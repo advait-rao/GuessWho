@@ -1,0 +1,25 @@
+﻿name,gender,facial_hair,moustache,beard,hair_colour,hair_partition,curly_hair,hat,bald,long_hair,glasses,earrings,big_nose,big_mouth,red cheeks,blue_eyes,sad
+Alex,M,T,T,F,BLACK,F,F,F,F,F,F,F,F,T,F,F,F
+Alfred,M,T,T,F,GINGER,T,F,F,F,T,F,F,F,F,F,T,T
+Anita,F,F,F,F,BLONDE,T,F,F,F,T,F,F,F,F,T,T,F
+Anne,F,F,F,F,BLACK,F,T,F,F,F,F,T,F,F,F,F,F
+Bernard,M,F,F,F,BROWN,F,F,T,F,F,F,F,T,F,F,F,T
+Bill,M,T,F,T,GINGER,F,F,F,T,F,F,F,F,F,T,F,F
+Charles,M,T,T,F,BLONDE,T,F,F,F,F,T,F,F,T,F,F,F
+Claire,F,F,F,F,GINGER,F,F,T,F,F,F,F,F,F,F,F,F
+David,M,T,F,T,BLONDE,F,F,F,F,F,F,F,F,T,F,F,F
+Eric,M,F,F,F,BLONDE,F,F,T,F,F,F,F,F,T,F,F,F
+Frans,M,F,F,F,GINGER,F,T,F,F,F,F,F,F,F,F,F,F
+George,M,F,F,F,WHITE,F,F,T,F,F,F,F,F,T,F,F,T
+Herman,M,F,F,F,GINGER,F,T,F,T,F,F,F,T,F,F,F,F
+Joe,M,F,F,F,BLONDE,F,T,F,F,F,T,F,F,F,F,F,F
+Maria,F,F,F,F,BROWN,F,F,T,F,T,F,T,F,F,F,F,F
+Max,M,T,T,F,BROWN,F,T,F,F,F,F,F,T,T,F,F,F
+Paul,M,F,F,F,WHITE,F,F,F,F,F,T,F,F,F,F,F,F
+Peter,M,F,F,F,WHITE,T,F,F,F,F,F,F,T,T,F,T,F
+Philip,M,T,F,T,BLACK,F,T,F,F,F,F,F,F,T,T,F,F
+Richard,M,T,T,T,BROWN,F,F,F,T,F,F,F,F,F,F,F,F
+Robert,M,F,F,F,BROWN,T,F,F,F,F,F,F,T,T,T,T,T
+Sam,M,F,F,F,WHITE,F,F,F,T,F,T,F,F,F,F,F,F
+Susan,F,F,F,F,WHITE,T,F,F,F,T,F,F,F,T,T,F,F
+Tom,M,F,F,F,BLACK,F,F,F,T,F,T,F,F,F,F,T,F
