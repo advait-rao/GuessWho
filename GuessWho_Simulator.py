@@ -115,6 +115,9 @@ class Player:
     def check_question(self, question):
         return self.__players_character.check_trait(question)
 
+    def check_bs_question(self, starting_letter):
+        return str(self.__players_character)[0] >= starting_letter
+
     def asks_random_question(self):
         size = len(self.__askable_traits)
         random_index = random.randint(0, size-1)
@@ -124,6 +127,23 @@ class Player:
         print("{} responded : {}".format(self.opponent.player_name, answer))
         self.__askable_traits.pop(random_index) # removing question once asked.
         return (question, answer)
+
+    def asks_bs_question(self): #does the starting letter of the name of your character start with / come after -
+        mid_index = len(self.__list_of_characters) // 2
+        starting_letter = str(self.__list_of_characters[mid_index])[0] #gets starting letter of the name
+        answer = self.opponent.check_bs_question(starting_letter)
+        print("Does the starting letter of the name of your character start with / come after \"{}\" ?".format(str(self.__list_of_characters[mid_index])[0]))
+        print("{} responded : {}".format(self.opponent.player_name, answer))
+        if answer:
+            self.__list_of_characters = self.__list_of_characters[mid_index:]
+        else:
+            self.__list_of_characters = self.__list_of_characters[:mid_index]
+
+        print("{} has {} possible characters remaining.".format(self.player_name, len(self.__list_of_characters)))
+        if len(self.__list_of_characters) == 1:
+            self.set_win()
+
+
 
     def remove_characters(self, character_trait_tuple ):
         # character_trait is a tuple. It contains the character_trait that was guessed, and the answer
@@ -140,7 +160,7 @@ class Player:
                 count += 1
 
         print("Removed {} characters".format(count))
-        print("{} has {} possible characters remaining.".format(self.player_name, self.get_remaining_characters()))
+        print("{} has {} possible characters remaining.".format(self.player_name, len(self.__list_of_characters)))
 
         if len(self.__list_of_characters) == 1:
             self.set_win()
@@ -148,7 +168,9 @@ class Player:
     def get_remaining_characters(self):
         return len(self.__list_of_characters)
 
+
 ######### END OF PLAYER CLASS ############
+
 
 import csv
 
@@ -175,65 +197,115 @@ def get_characters_from_file():
         return character_list
 
 
-def initialize_players(character_list):
+def initialize_players(character_list, player1_name, player2_name):
     # create p1 and p2, give them both the list of characters
-    player1 = Player("Player 1", character_list)
-    player2 = Player("Player 2", character_list) # creating player 1 and 2 and giving them the characters
+    player1 = Player(player1_name, character_list)
+    player2 = Player(player2_name, character_list) # creating player 1 and 2 and giving them the characters
     player1.set_opponent(player2)
     player2.set_opponent(player1)
 
     return player1, player2
 
+def players_turn(player):
+    print()
+    print("{}'s Turn: ".format(player.player_name))
+    if player.player_name in ["Player 1", "Player 2", "Regular Player"]:
+        answer = player.asks_random_question()# returns a tuple containing character trait and whether or not it is present
+        player.remove_characters(answer) #remove characters based on the answer
+    if player.player_name == "BS Player":
+        player.asks_bs_question()
+
+
+def check_win(player1, player2):
+    if player1.has_won():
+        print_win_message(player1)
+        return player1
+    if player2.has_won():
+        print_win_message(player2)
+        return player2
+
+
+def print_win_message(player):
+    print("**************************************")
+    print("            {} WINS!".format(player.player_name.upper()))
+    print("The opponent's character was: {}".format(player.opponent.get_players_character()))
+    print("**************************************")
+    print()
+    print()
+
+def begin_questioning(player_a, player_b):
+    while(player_a.get_remaining_characters() != 1 and player_b.get_remaining_characters() != 1):
+        players_turn(player_a)
+        result = check_win(player_a, player_b)
+        if result != None:
+            return result
+
+        players_turn(player_b)
+        result = check_win(player_a, player_b)
+        if result != None:
+            return result
+
 def run_game():
     list_of_characters = get_characters_from_file()
-    player1, player2 = initialize_players(list_of_characters)
-
-    while(player1.get_remaining_characters() != 1 and player2.get_remaining_characters() != 1):
-        #ask questions
-        print()
-        print("Player 1's Turn: ")
-        answer = player1.asks_random_question() # returns a tuple containing character trait and whether or not it is present
-        player1.remove_characters(answer) #remove characters based on the answer
-        if player1.has_won():
-            print("**************************************")
-            print("            PLAYER 1 WINS!")
-            print("The opponent's character was: {}".format(player2.get_players_character()))
-            print("**************************************")
-            print()
-            print() #only remaining character in character list
-            return player1
-            break
-        print()
-        print()
-
-        print("Player 2's Turn: ")
-        answer = player2.asks_random_question()
-        player2.remove_characters(answer)
-        if player2.has_won():
-            print("**************************************")
-            print("            PLAYER 2 WINS!")
-            print("The opponent's character was: {}".format(player1.get_players_character()))
-            print("**************************************")
-            print()
-            print()
-            return player2
-            break
-        print()
+    player1, player2 = initialize_players(list_of_characters, "Player 1", "Player 2")
+    #print("Player 1's character: {}".format(player1.get_players_character()))
+    #print("Player 2's character: {}".format(player2.get_players_character()))
+    i = random.randint(0,1)
+    if i == 1: #player1 starts first
+        result = begin_questioning(player1, player2)
+        if result != None:
+            return result
+    else: #player2 starts first
+        result = begin_questioning(player2, player1)
+        if result != None:
+            return result
     #End of run_game()
 
+def run_bs_game(): #Player1 uses the binary search strategy.
+    list_of_characters = get_characters_from_file()
+    bs_player, reg_player = initialize_players(list_of_characters, "BS Player", "Regular Player")
+    #print("BS Player's character: {}".format(bs_player.get_players_character()))
+    #print("Regular Player's character: {}".format(reg_player.get_players_character()))
+    i = random.randint(0,1)
+    if i == 1: #bs_player starts first
+        result = begin_questioning(bs_player, reg_player)
+        if result != None:
+            return result
+    else: #reg_player starts first
+        result = begin_questioning(reg_player, bs_player)
+        if result != None:
+            return result
+
+
+
+
 def main():
+    strategy = input("Enter 1 for Binary Search Strategy or 0 for Regular Game: ")
+    simulations = int(input("Enter the number of simulations to be run: "))
     player1_win_count = 0
-    player2_win_count = 1
+    player2_win_count = 0
     i = 0
-    while(i < 10000):
-        victor = run_game()
-        if victor.player_name == "Player 1":
-            player1_win_count += 1
-        else:
-            player2_win_count += 1
+    while(i < simulations):
+        if strategy == "0":
+            victor = run_game()
+            if victor.player_name == "Player 1":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
+        if strategy == "1":
+            victor = run_bs_game()
+            if victor.player_name == "BS Player":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
         i += 1
 
-    print("+++ SIMULATED 10000 GAMES +++")
+    if strategy == 1:
+        print("Player 1 used the Binary Search Strategy.")
+
+    print("+++ SIMULATED {} GAMES +++".format(simulations))
     print("+ Player 1 won {} times   +".format(player1_win_count))
     print("+ Player 2 won {} times   +".format(player2_win_count))
     print("+++++++++++++++++++++++++++++")
