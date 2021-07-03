@@ -84,6 +84,18 @@ import random
 class Player:
     def __init__(self, player_name, list_of_characters):
         self.__list_of_characters = list_of_characters.copy() #list of opponents possible characters
+        self.greedy_questions = [
+            "big_mouth", "facial_hair", "curly_hair", "hair_partition", "female", "glasses",
+            "moustache", "blue_eyes", "red_cheeks", "big_nose", "blonde_hair", "brown_hair",
+            "white_hair", "ginger_hair", "bald", "hat", "beard", "sad", "black_hair", "long_hair", "earringss"
+        ]
+        self.optimal_question_tree = [
+            "big_mouth", "curly_hair", "black_hair", "long_hair", "ginger_hair", "hair_partition",
+            "moustache", "bald", "blonde_hair", "earrings", "bald", "facial_hair", "white_hair",None,
+            None, "hat", "glasses", "blue_eyes", None, None, None, None, None, "blonde_hair",
+            "beard", "blue_eyes", "big_nose", None, None, None, None, None, "sad", "red_cheeks", "blue_eyes"
+        ]
+        self.optimal_tree_index = 0
         self.player_name = player_name
         total_characters = len(list_of_characters)
         random_index = random.randint(0, total_characters-1)
@@ -140,8 +152,37 @@ class Player:
             self.__list_of_characters = self.__list_of_characters[:mid_index]
 
         print("{} has {} possible characters remaining.".format(self.player_name, len(self.__list_of_characters)))
+        print()
         if len(self.__list_of_characters) == 1:
             self.set_win()
+
+    def asks_greedy_question(self):
+        question = self.greedy_questions[0]
+        print("Is this a trait of your character? : {}".format(question.upper()))
+        answer = self.opponent.check_question(question)
+        self.greedy_questions = self.greedy_questions[1:]
+        answer = self.opponent.check_question(question)
+        print("{} responded : {}".format(self.opponent.player_name, answer))
+        return (question, answer)
+
+    def asks_optimal_question(self):
+        question = self.optimal_question_tree[self.optimal_tree_index]
+        print("Is this a trait of your character? : {}".format(question.upper()))
+        answer = self.opponent.check_question(question)
+
+        try:
+            if answer:
+                self.optimal_tree_index = (2 * self.optimal_tree_index) + 2
+            else:
+                self.optimal_tree_index = (2 * self.optimal_tree_index) + 1
+            print("{} responded : {}".format(self.opponent.player_name, answer))
+            return (question, answer)
+
+        except:
+            print("{} responded : {}".format(self.opponent.player_name, answer))
+            return (question, answer)
+
+
 
 
 
@@ -161,6 +202,7 @@ class Player:
 
         print("Removed {} characters".format(count))
         print("{} has {} possible characters remaining.".format(self.player_name, len(self.__list_of_characters)))
+        print()
 
         if len(self.__list_of_characters) == 1:
             self.set_win()
@@ -207,14 +249,21 @@ def initialize_players(character_list, player1_name, player2_name):
     return player1, player2
 
 def players_turn(player):
-    print()
     print("{}'s Turn: ".format(player.player_name))
-    if player.player_name in ["Player 1", "Player 2", "Regular Player"]:
+    if player.player_name in ["Player 1", "Player 2", "Naive Player"]:
         answer = player.asks_random_question()# returns a tuple containing character trait and whether or not it is present
         player.remove_characters(answer) #remove characters based on the answer
+
     if player.player_name == "BS Player":
         player.asks_bs_question()
 
+    if player.player_name == "Greedy Player":
+        answer = player.asks_greedy_question()# returns a tuple containing character trait and whether or not it is present
+        player.remove_characters(answer) #remove characters based on the answer
+
+    if player.player_name == "Optimal Player":
+        answer = player.asks_optimal_question()
+        player.remove_characters(answer)
 
 def check_win(player1, player2):
     if player1.has_won():
@@ -227,14 +276,17 @@ def check_win(player1, player2):
 
 def print_win_message(player):
     print("**************************************")
-    print("            {} WINS!".format(player.player_name.upper()))
+    print("          {} WINS!".format(player.player_name.upper()))
     print("The opponent's character was: {}".format(player.opponent.get_players_character()))
     print("**************************************")
     print()
     print()
 
 def begin_questioning(player_a, player_b):
+    turns = 0
     while(player_a.get_remaining_characters() != 1 and player_b.get_remaining_characters() != 1):
+        turns += 1
+        print("TURN {}".format(turns))
         players_turn(player_a)
         result = check_win(player_a, player_b)
         if result != None:
@@ -263,52 +315,192 @@ def run_game():
 
 def run_bs_game(): #Player1 uses the binary search strategy.
     list_of_characters = get_characters_from_file()
-    bs_player, reg_player = initialize_players(list_of_characters, "BS Player", "Regular Player")
+    bs_player, naive_player = initialize_players(list_of_characters, "BS Player", "Naive Player")
     #print("BS Player's character: {}".format(bs_player.get_players_character()))
     #print("Regular Player's character: {}".format(reg_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #bs_player starts first
-        result = begin_questioning(bs_player, reg_player)
+        result = begin_questioning(bs_player, naive_player)
         if result != None:
             return result
     else: #reg_player starts first
-        result = begin_questioning(reg_player, bs_player)
+        result = begin_questioning(naive_player, bs_player)
         if result != None:
             return result
 
+def run_greedy_game():
+    list_of_characters = get_characters_from_file()
+    greedy_player, naive_player = initialize_players(list_of_characters, "Greedy Player", "Naive Player")
+    i = random.randint(0,1)
+    if i == 1: #greedy_player starts first
+        result = begin_questioning(greedy_player, naive_player)
+        if result != None:
+            return result
+    else: #reg_player starts first
+        result = begin_questioning(naive_player, greedy_player)
+        if result != None:
+            return result
 
+def run_optimal_game():
+    list_of_characters = get_characters_from_file()
+    optimal_player, naive_player = initialize_players(list_of_characters, "Optimal Player", "Naive Player")
+    i = random.randint(0,1)
+    if i == 1: #greedy_player starts first
+        result = begin_questioning(optimal_player, naive_player)
+        if result != None:
+            return result
+    else: #reg_player starts first
+        result = begin_questioning(naive_player, optimal_player)
+        if result != None:
+            return result
 
+def run_optimal_v_greedy_game():
+    list_of_characters = get_characters_from_file()
+    optimal_player, greedy_player = initialize_players(list_of_characters, "Optimal Player", "Greedy Player")
+    i = random.randint(0,1)
+    if i == 1: #greedy_player starts first
+        result = begin_questioning(optimal_player, greedy_player)
+        if result != None:
+            return result
+    else: #reg_player starts first
+        result = begin_questioning(greedy_player, optimal_player)
+        if result != None:
+            return result
+
+def run_optimal_v_bs_game():
+    list_of_characters = get_characters_from_file()
+    optimal_player, bs_player = initialize_players(list_of_characters, "Optimal Player", "BS Player")
+    i = random.randint(0,1)
+    if i == 1: #greedy_player starts first
+        result = begin_questioning(optimal_player, bs_player)
+        if result != None:
+            return result
+    else: #reg_player starts first
+        result = begin_questioning(bs_player, optimal_player)
+        if result != None:
+            return result
+
+def run_greedy_v_bs_game():
+    list_of_characters = get_characters_from_file()
+    greedy_player, bs_player = initialize_players(list_of_characters, "Greedy Player", "BS Player")
+    i = random.randint(0,1)
+    if i == 1: #greedy_player starts first
+        result = begin_questioning(greedy_player, bs_player)
+        if result != None:
+            return result
+    else: #reg_player starts first
+        result = begin_questioning(bs_player, greedy_player)
+        if result != None:
+            return result
 
 def main():
-    strategy = input("Enter 1 for Binary Search Strategy or 0 for Regular Game: ")
+    print("------------------------------------------------")
+    print("             GUESS WHO? SIMULATOR")
+    print("------------------------------------------------")
+    print("Naive Strategy ..............................: 1")
+    print("Greedy Strategy .............................: 2")
+    print("Binary Search Strategy ......................: 3")
+    print("Optimal Strategy ............................: 4")
+    print("Optimal Strategy vs Greedy Strategy .........: 5")
+    print("Optimal Strategy vs Binary Search Strategy ..: 6")
+    print("Greedy Strategy vs Binary Search Strategy ...: 7")
+    print("------------------------------------------------")
+    print()
+    strategy = int(input("Enter your choice of strategy: "))
     simulations = int(input("Enter the number of simulations to be run: "))
+    print()
     player1_win_count = 0
     player2_win_count = 0
     i = 0
     while(i < simulations):
-        if strategy == "0":
+        if strategy == 1:
             victor = run_game()
             if victor.player_name == "Player 1":
                 player1_win_count += 1
             else:
                 player2_win_count += 1
 
-        if strategy == "1":
+        if strategy == 2:
+            victor = run_greedy_game()
+            if victor.player_name == "Greedy Player":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
+        if strategy == 3:
             victor = run_bs_game()
             if victor.player_name == "BS Player":
                 player1_win_count += 1
             else:
                 player2_win_count += 1
 
+        if strategy == 4:
+            victor = run_optimal_game()
+            if victor.player_name == "Optimal Player":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
+        if strategy == 5:
+            victor = run_optimal_v_greedy_game()
+            if victor.player_name == "Optimal Player":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
+        if strategy == 6:
+            victor = run_optimal_v_bs_game()
+            if victor.player_name == "Optimal Player":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
+        if strategy == 7:
+            victor = run_greedy_v_bs_game()
+            if victor.player_name == "Greedy Player":
+                player1_win_count += 1
+            else:
+                player2_win_count += 1
+
         i += 1
 
-    if strategy == 1:
-        print("Player 1 used the Binary Search Strategy.")
+    player1_win_percentage = player1_win_count / (player1_win_count + player2_win_count) * 100
+    player2_win_percentage = player2_win_count / (player1_win_count + player2_win_count) * 100
 
-    print("+++ SIMULATED {} GAMES +++".format(simulations))
-    print("+ Player 1 won {} times   +".format(player1_win_count))
-    print("+ Player 2 won {} times   +".format(player2_win_count))
-    print("+++++++++++++++++++++++++++++")
+    print("**************************************")
+    print("SIMULATED {} GAMES".format(simulations))
+    print()
+    if strategy == 1:
+        print("Player 1 : Naive Strategy")
+        print("Player 2 : Naive Strategy")
+        print()
+    if strategy == 2:
+        print("Player 1 : Greedy Strategy")
+        print("Player 2 : Naive Strategy")
+        print()
+    if strategy == 3:
+        print("Player 1 : Binary Search Strategy")
+        print("Player 2 : Naive Strategy")
+        print()
+    if strategy == 4:
+        print("Player 1 : Optimal Strategy")
+        print("Player 2 : Naive Strategy")
+        print()
+    if strategy == 5:
+        print("Player 1 : Optimal Strategy")
+        print("Player 2 : Greedy Strategy")
+        print()
+    if strategy == 6:
+        print("Player 1 : Optimal Strategy")
+        print("Player 2 : Binary Search Strategy")
+        print()
+    if strategy == 7:
+        print("Player 1 : Greedy Strategy")
+        print("Player 2 : Binary Search Strategy")
+        print()
+    print("Player 1 won {} times ({:.2f}%) ".format(player1_win_count, player1_win_percentage))
+    print("Player 2 won {} times ({:.2f}%) ".format(player2_win_count, player2_win_percentage))
+    print("**************************************")
     print()
     print("...")
 
