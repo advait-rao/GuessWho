@@ -183,7 +183,6 @@ class Player:
 
 #END OF PLAYER CLASS
 
-
 import csv
 
 def get_characters_from_file():
