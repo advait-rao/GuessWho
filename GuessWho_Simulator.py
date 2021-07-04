@@ -3,23 +3,6 @@ Author: Advait Rao
 Date: 26-05-2021
 GuessWhoSimulator.py: This program runs simulations of the board game Guess Who.
 '''
-########################################################
-# THIS CLASS CREATES A character IN THE GAME OF GUESS WHO #
-########################################################
-
-# name (String)  : The first name of the character
-# gender (String) : The character's gender
-# facial_hair (String) : moustache, beard or None
-# hair_colour (String) : Black, Blonde, Red, Brown or None
-# hair_length (String) : Short, Long or Bald
-# hair_style : Straight or Curly
-# glasses (boolean) : Does the character wear glasses?
-# earrings (boolean) Does the character wear earrings?
-# nose_size (String) : Small, Medium, Large
-# red_cheeks (boolean) : Does the character have red cheeks?
-# blue_eyes (boolean) : Does the character have blue eyes?
-# sad (boolean) : Does the character look sad?
-
 
 class Character:
     def __init__(self, name, female, facial_hair, moustache, beard, black_hair,
@@ -61,23 +44,13 @@ class Character:
     def check_trait(self, trait):
         return self.__traits_dict[trait]
 
-    def check_name(self, guess):
-        return guess == self.__traits_dict[guess]
-
-    def get_trait(self, trait):
-        return self.__traits_dict[trait]
-
     def __str__(self):
         return (self.__name)
 
     def __repr__(self):
         return self.__name.upper()
 
-    def print_character(self):
-        for key in self.__traits_dict:
-            print("{} : {}".format(key, self.__traits_dict[key]))
-
-##############END OF CHARACTER CLASS#################
+#END OF CHARACTER CLASS
 
 import random
 
@@ -115,9 +88,6 @@ class Player:
     def get_players_character(self):
         return self.__players_character
 
-    def get_characters(self):
-        return self.__list_of_characters
-
     def set_win(self):
         self.__win = True
 
@@ -144,7 +114,7 @@ class Player:
         mid_index = len(self.__list_of_characters) // 2
         starting_letter = str(self.__list_of_characters[mid_index])[0] #gets starting letter of the name
         answer = self.opponent.check_bs_question(starting_letter)
-        print("Does the starting letter of the name of your character start with / come after \"{}\" ?".format(str(self.__list_of_characters[mid_index])[0]))
+        print("Does the starting letter of the name of your character start with or come after \"{}\" ?".format(str(self.__list_of_characters[mid_index])[0]))
         print("{} responded : {}".format(self.opponent.player_name, answer))
         if answer:
             self.__list_of_characters = self.__list_of_characters[mid_index:]
@@ -211,7 +181,7 @@ class Player:
         return len(self.__list_of_characters)
 
 
-######### END OF PLAYER CLASS ############
+#END OF PLAYER CLASS
 
 
 import csv
@@ -240,7 +210,6 @@ def get_characters_from_file():
 
 
 def initialize_players(character_list, player1_name, player2_name):
-    # create p1 and p2, give them both the list of characters
     player1 = Player(player1_name, character_list)
     player2 = Player(player2_name, character_list) # creating player 1 and 2 and giving them the characters
     player1.set_opponent(player2)
@@ -317,7 +286,7 @@ def run_bs_game(): #Player1 uses the binary search strategy.
     list_of_characters = get_characters_from_file()
     bs_player, naive_player = initialize_players(list_of_characters, "BS Player", "Naive Player")
     #print("BS Player's character: {}".format(bs_player.get_players_character()))
-    #print("Regular Player's character: {}".format(reg_player.get_players_character()))
+    #print("Naive Player's character: {}".format(naive_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #bs_player starts first
         result = begin_questioning(bs_player, naive_player)
@@ -331,6 +300,8 @@ def run_bs_game(): #Player1 uses the binary search strategy.
 def run_greedy_game():
     list_of_characters = get_characters_from_file()
     greedy_player, naive_player = initialize_players(list_of_characters, "Greedy Player", "Naive Player")
+    #print("Greedy Player's character: {}".format(greedy_player.get_players_character()))
+    #print("Naive Player's character: {}".format(naive_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #greedy_player starts first
         result = begin_questioning(greedy_player, naive_player)
@@ -344,6 +315,8 @@ def run_greedy_game():
 def run_optimal_game():
     list_of_characters = get_characters_from_file()
     optimal_player, naive_player = initialize_players(list_of_characters, "Optimal Player", "Naive Player")
+    #print("Optimal Player's character: {}".format(optimal_player.get_players_character()))
+    #print("Naive Player's character: {}".format(naive_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #greedy_player starts first
         result = begin_questioning(optimal_player, naive_player)
@@ -357,6 +330,8 @@ def run_optimal_game():
 def run_optimal_v_greedy_game():
     list_of_characters = get_characters_from_file()
     optimal_player, greedy_player = initialize_players(list_of_characters, "Optimal Player", "Greedy Player")
+    #print("Optimal Player's character: {}".format(optimal_player.get_players_character()))
+    #print("Greedy Player's character: {}".format(greedy_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #greedy_player starts first
         result = begin_questioning(optimal_player, greedy_player)
@@ -370,6 +345,8 @@ def run_optimal_v_greedy_game():
 def run_optimal_v_bs_game():
     list_of_characters = get_characters_from_file()
     optimal_player, bs_player = initialize_players(list_of_characters, "Optimal Player", "BS Player")
+    #print("Optimal Player's character: {}".format(optimal_player.get_players_character()))
+    #print("BS Player's character: {}".format(bs_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #greedy_player starts first
         result = begin_questioning(optimal_player, bs_player)
@@ -383,6 +360,8 @@ def run_optimal_v_bs_game():
 def run_greedy_v_bs_game():
     list_of_characters = get_characters_from_file()
     greedy_player, bs_player = initialize_players(list_of_characters, "Greedy Player", "BS Player")
+    #print("Greedy Player's character: {}".format(greedy_player.get_players_character()))
+    #print("BS Player's character: {}".format(bs_player.get_players_character()))
     i = random.randint(0,1)
     if i == 1: #greedy_player starts first
         result = begin_questioning(greedy_player, bs_player)
@@ -394,20 +373,20 @@ def run_greedy_v_bs_game():
             return result
 
 def main():
-    print("------------------------------------------------")
-    print("             GUESS WHO? SIMULATOR")
-    print("------------------------------------------------")
-    print("Naive Strategy ..............................: 1")
-    print("Greedy Strategy .............................: 2")
-    print("Binary Search Strategy ......................: 3")
-    print("Optimal Strategy ............................: 4")
-    print("Optimal Strategy vs Greedy Strategy .........: 5")
-    print("Optimal Strategy vs Binary Search Strategy ..: 6")
-    print("Greedy Strategy vs Binary Search Strategy ...: 7")
-    print("------------------------------------------------")
+    print("--------------------------------------------------------")
+    print("                   GUESS WHO? SIMULATOR")
+    print("--------------------------------------------------------")
+    print("   Naive Strategy ..............................: 1")
+    print("   Greedy Strategy .............................: 2")
+    print("   Binary Search Strategy ......................: 3")
+    print("   Optimal Strategy ............................: 4")
+    print("   Optimal Strategy vs Greedy Strategy .........: 5")
+    print("   Optimal Strategy vs Binary Search Strategy ..: 6")
+    print("   Greedy Strategy vs Binary Search Strategy ...: 7")
+    print("--------------------------------------------------------")
     print()
-    strategy = int(input("Enter your choice of strategy: "))
-    simulations = int(input("Enter the number of simulations to be run: "))
+    strategy = int(input("   Enter your choice of strategy: "))
+    simulations = int(input("   Enter the number of simulations to be run: "))
     print()
     player1_win_count = 0
     player2_win_count = 0
