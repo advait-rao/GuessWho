@@ -4,7 +4,7 @@ This project determines the best way to play the game **[Guess Who?](https://en.
 ## Introduction
 _Guess Who?_ is a board game in which the objective is to guess the opponent's character. Each player picks a character from a group of 24 characters, and then take turns asking yes or no questions, until one of them guesses the opponent's character.
 
-In this project, 3 different strategies are tested, by simulating games of _Guess Who?_ and having different strategies face off against each other.
+In this project, 4 different strategies are tested, by simulating games of _Guess Who?_ and having different strategies face off against each other.
 
 
 ### The Strategies:
