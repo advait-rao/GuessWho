@@ -196,9 +196,9 @@ class Player:
         size = len(self.__askable_traits)
         random_index = random.randint(0, size - 1)
         question = self.__askable_traits[random_index]
-        print("Is this a trait of your character? : {}".format(question.upper()))
+        print("  Is this a trait of your character? : {}".format(question.upper()))
         answer = self.opponent.check_question(question)
-        print("{} responded : {}".format(self.opponent.player_name, answer))
+        print("  {} responded : {}".format(self.opponent.player_name, answer))
         self.__askable_traits.pop(random_index)  # removing question once asked.
         return (question, answer)
 
@@ -211,18 +211,18 @@ class Player:
         ]  # gets starting letter of the name
         answer = self.opponent.check_bs_question(starting_letter)
         print(
-            'Does the starting letter of the name of your character start with or come after "{}" ?'.format(
+            '  Does your character\'s name start with or come after "{}" in the alphabet?'.format(
                 str(self.__list_of_characters[mid_index])[0]
             )
         )
-        print("{} responded : {}".format(self.opponent.player_name, answer))
+        print("  {} responded : {}".format(self.opponent.player_name, answer))
         if answer:
             self.__list_of_characters = self.__list_of_characters[mid_index:]
         else:
             self.__list_of_characters = self.__list_of_characters[:mid_index]
 
         print(
-            "{} has {} possible characters remaining.".format(
+            "  {} has {} possible characters remaining.".format(
                 self.player_name, len(self.__list_of_characters)
             )
         )
@@ -232,16 +232,16 @@ class Player:
 
     def asks_greedy_question(self):
         question = self.greedy_questions[0]
-        print("Is this a trait of your character? : {}".format(question.upper()))
+        print("  Is this a trait of your character? : {}".format(question.upper()))
         answer = self.opponent.check_question(question)
         self.greedy_questions = self.greedy_questions[1:]
         answer = self.opponent.check_question(question)
-        print("{} responded : {}".format(self.opponent.player_name, answer))
+        print("  {} responded : {}".format(self.opponent.player_name, answer))
         return (question, answer)
 
     def asks_optimal_question(self):
         question = self.optimal_question_tree[self.optimal_tree_index]
-        print("Is this a trait of your character? : {}".format(question.upper()))
+        print("  Is this a trait of your character? : {}".format(question.upper()))
         answer = self.opponent.check_question(question)
 
         try:
@@ -249,11 +249,11 @@ class Player:
                 self.optimal_tree_index = (2 * self.optimal_tree_index) + 2
             else:
                 self.optimal_tree_index = (2 * self.optimal_tree_index) + 1
-            print("{} responded : {}".format(self.opponent.player_name, answer))
+            print("  {} responded : {}".format(self.opponent.player_name, answer))
             return (question, answer)
 
         except:
-            print("{} responded : {}".format(self.opponent.player_name, answer))
+            print("  {} responded : {}".format(self.opponent.player_name, answer))
             return (question, answer)
 
     def remove_characters(self, character_trait_tuple):
@@ -270,9 +270,9 @@ class Player:
                 self.__list_of_characters.pop(i)
                 count += 1
 
-        print("Removed {} characters".format(count))
+        print("  Removed {} characters".format(count))
         print(
-            "{} has {} possible characters remaining.".format(
+            "  {} has {} possible characters remaining.".format(
                 self.player_name, len(self.__list_of_characters)
             )
         )
@@ -328,7 +328,7 @@ def get_characters_from_file():
             )
             character_list.append(new_character)
 
-        print("{} characters created.".format(len(character_list)))
+        print("  {} characters created.".format(len(character_list)))
         return character_list
 
 
@@ -344,7 +344,7 @@ def initialize_players(character_list, player1_name, player2_name):
 
 
 def players_turn(player):
-    print("{}'s Turn: ".format(player.player_name))
+    print("  {}'s Turn: ".format(player.player_name))
     if player.player_name in ["Player 1", "Player 2", "Naive Player"]:
         answer = (
             player.asks_random_question()
@@ -378,7 +378,7 @@ def print_win_message(player):
     print("**************************************")
     print("          {} WINS!".format(player.player_name.upper()))
     print(
-        "The opponent's character was: {}".format(
+        "  The opponent's character was: {}".format(
             player.opponent.get_players_character()
         )
     )
@@ -394,7 +394,7 @@ def begin_questioning(player_a, player_b):
         and player_b.get_remaining_characters() != 1
     ):
         turns += 1
-        print("TURN {}".format(turns))
+        print("  TURN {}".format(turns))
         players_turn(player_a)
         result = check_win(player_a, player_b)
         if result != None:
@@ -551,6 +551,8 @@ def main():
     player2_win_count = 0
     i = 0
     while i < simulations:
+        print("GAME {}:".format(i+1))
+        print()
         if strategy == 1:
             victor = run_game()
             if victor.player_name == "Player 1":
@@ -610,43 +612,43 @@ def main():
     )
 
     print("**************************************")
-    print("SIMULATED {} GAMES".format(simulations))
+    print("  SIMULATED {} GAMES".format(simulations))
     print()
     if strategy == 1:
-        print("Player 1 : Naive Strategy")
-        print("Player 2 : Naive Strategy")
+        print("  Player 1 : Naive Strategy")
+        print("  Player 2 : Naive Strategy")
         print()
     if strategy == 2:
-        print("Player 1 : Greedy Strategy")
-        print("Player 2 : Naive Strategy")
+        print("  Player 1 : Greedy Strategy")
+        print("  Player 2 : Naive Strategy")
         print()
     if strategy == 3:
-        print("Player 1 : Binary Search Strategy")
-        print("Player 2 : Naive Strategy")
+        print("  Player 1 : Binary Search Strategy")
+        print("  Player 2 : Naive Strategy")
         print()
     if strategy == 4:
-        print("Player 1 : Optimal Strategy")
-        print("Player 2 : Naive Strategy")
+        print("  Player 1 : Optimal Strategy")
+        print("  Player 2 : Naive Strategy")
         print()
     if strategy == 5:
-        print("Player 1 : Optimal Strategy")
-        print("Player 2 : Greedy Strategy")
+        print("  Player 1 : Optimal Strategy")
+        print("  Player 2 : Greedy Strategy")
         print()
     if strategy == 6:
-        print("Player 1 : Optimal Strategy")
-        print("Player 2 : Binary Search Strategy")
+        print("  Player 1 : Optimal Strategy")
+        print("  Player 2 : Binary Search Strategy")
         print()
     if strategy == 7:
-        print("Player 1 : Greedy Strategy")
-        print("Player 2 : Binary Search Strategy")
+        print("  Player 1 : Greedy Strategy")
+        print("  Player 2 : Binary Search Strategy")
         print()
     print(
-        "Player 1 won {} times ({:.2f}%) ".format(
+        "  Player 1 won {} times ({:.2f}%) ".format(
             player1_win_count, player1_win_percentage
         )
     )
     print(
-        "Player 2 won {} times ({:.2f}%) ".format(
+        "  Player 2 won {} times ({:.2f}%) ".format(
             player2_win_count, player2_win_percentage
         )
     )
